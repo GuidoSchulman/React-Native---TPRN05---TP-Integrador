@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import AppServices from '../appService'; // Asegúrate de que la ruta del archivo sea correcta
+import AppServices from '../appService'; 
 
-const appService = new AppServices(); // Crea una instancia de AppServices
+const appService = new AppServices();
 
 export default function ConfigAplicacion() {
   const [numero, setNumero] = useState('');
-  const [url, setUrl] = useState('');
+  const [urlVid, setUrlVid] = useState('');
+  const [urlAu, setUrlAu] = useState('');
   const GuardarNumero = async (numero) => {
-    await appService.guardarNumero(numero); // Usa el método de la instancia de AppServices
+    await appService.guardarNumero(numero); 
   };
-  const GuardarUrl = async (url) => {
-    await appService.guardarUrl(url); // Usa el método de la instancia de AppServices
+  const GuardarUrlVid = async (urlVid) => {
+    await appService.guardarUrlVid(urlVid); 
+  };
+  const GuardarUrlAu = async (urlAu) => {
+    await appService.guardarUrlAu(urlAu); 
   };
 
   return (
@@ -27,17 +31,31 @@ export default function ConfigAplicacion() {
         <Text style={styles.textoBoton}>Guardar</Text>
       </TouchableOpacity>
 
-      <Text style={styles.textoPrincipal}>Ingrese el url</Text>
+      <Text style={styles.textoPrincipal}>Ingrese el url del video</Text>
       <TextInput
-        onChangeText={setUrl}
-        value={url}
+        onChangeText={setUrlVid}
+        value={urlVid}
         style={styles.input}
       
       />
-      <TouchableOpacity onPress={() => GuardarUrl(url)} style={styles.boton}>
+      <TouchableOpacity onPress={() => GuardarUrlVid(urlVid)} style={styles.boton}>
+        <Text style={styles.textoBoton}>Guardar</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.textoPrincipal}>Ingrese el url de la cancion</Text>
+      <TextInput
+        onChangeText={setUrlAu}
+        value={urlAu}
+        style={styles.input}
+      
+      />
+      <TouchableOpacity onPress={() => GuardarUrlAu(urlAu)} style={styles.boton}>
         <Text style={styles.textoBoton}>Guardar</Text>
       </TouchableOpacity>
     </View>
+
+
+
   );
 }
 
