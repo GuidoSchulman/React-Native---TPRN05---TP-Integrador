@@ -4,11 +4,12 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import SplashScreen from "./src/screens/SplashScreen"
 import ConfigAplicacion from './src/screens/ConfigAplicacion';
+import LlamadoEmergencia from './src/screens/LlamadoEmergencia';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-     <Stack.Navigator initialRouteName="ConfigAplicacion">
+     <Stack.Navigator initialRouteName="LlamadoEmergencia">
         <Stack.Screen
           name="SplashScreen"
           component={SplashScreen}
@@ -18,6 +19,11 @@ export default function App() {
           name="ConfigAplicacion"
           component={ConfigAplicacion}
           options={{ title: "Welcome" }}
+        />
+         <Stack.Screen
+          name="LlamadoEmergencia"
+          component={LlamadoEmergencia}
+          options={{ title: "Seccion emergencia" }}
         />
       </Stack.Navigator>
       </NavigationContainer>
