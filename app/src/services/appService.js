@@ -25,11 +25,15 @@ class AppServices {
     await this.setObject(PERFIL_KEY, perfil);
   };
   
-  getPerfil =  () => {
-    let perfil = new Perfil();  
-    perfil = this.getObject(PERFIL_KEY);
-    console.log(perfil);
-    return perfil
+  getPerfil = async () => {
+    try {
+      let perfil = await this.getObject(PERFIL_KEY);
+      console.log(perfil);
+      return perfil != null ? perfil : new Perfil();
+    } catch (error) {
+      console.error("Error getting perfil:", error);
+      return new Perfil();
+    }
   };
 }
 export default AppServices;

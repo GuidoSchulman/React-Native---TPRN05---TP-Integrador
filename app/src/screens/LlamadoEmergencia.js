@@ -23,12 +23,17 @@ export default function LlamadoEmergencia() {
     z: 0,
   });
   const [subscription, setSubscription] = useState(null);
-  
-  const appService = new AppServices()
+
+  const appService = new AppServices();
+
   const loadPerfil = async () => {
     let perfil = await appService.getPerfil();
-    setNumero(perfil.numero);
+    let tempNumero  = perfil?.numero?? "";
+    console.log("PerfilNumero", tempNumero);
+    await setNumero(tempNumero);
+    console.log("numero", tempNumero);
   };
+
   const _slow = () => Accelerometer.setUpdateInterval(1000);
   const _fast = () => Accelerometer.setUpdateInterval(16);
 
@@ -58,21 +63,28 @@ export default function LlamadoEmergencia() {
   };
 
   useEffect(() => {
-    loadPerfil()
-    _subscribe();
+    const fetchData = async () => {
+      await loadPerfil();
+      Accelerometer.setUpdateInterval(1000);
+      _subscribe();
+    };
+
+    fetchData();
 
     return () => _unsubscribe();
   }, []);
   //llamar
-  const llamarNumero = () => {
-    if (numero === "") {
-        console.log("Vacio ",numero);
+  const llamarNumero = async() => {
+    console.log(numero);
+    if (numero=="") {
+      console.log("Vacio ", numero);
       setShowModal(true);
-    } else {
-      const phoneNumber = numero;
+    } else{
+      console.log("NUMERO QUE DEBERIA ESTAR VACIO: ", numero);
+      let phoneNumber = numero.trim(); // Trim again to ensure no leading/trailing spaces
       console.log(phoneNumber);
-       Linking.openURL(`tel:${phoneNumber}`);
-     
+      await Linking.openURL(`tel:${phoneNumber}`);
+
     }
   };
 
@@ -100,12 +112,11 @@ export default function LlamadoEmergencia() {
           </View>
         </View>
       </Modal>
-      <Text style={styles.textoPrincipal}>Ingrese el numero</Text>
-    
-    
-      
-<Text>{numero}</Text>
-     
+      <Text style={styles.textoPrincipal}>
+        SACUDA PARA LLAMAR A SU CONTACTO DE EMERGENCIA
+      </Text>
+
+      <Text>{numero}</Text>
     </View>
   );
 }
@@ -135,6 +146,8 @@ const styles = StyleSheet.create({
   textoPrincipal: {
     fontSize: 20,
     alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
   },
   textoSecundario: {
     marginHorizontal: 50,

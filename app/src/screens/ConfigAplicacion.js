@@ -4,7 +4,7 @@ import AppServices from '../services/appService';
 
 const appService = new AppServices();
 
-export default function ConfigAplicacion() {
+export default function ConfigAplicacion({navigation}) {
   const [numero, setNumero] = useState('');
   const [urlVid, setUrlVid] = useState('');
   const [urlAu, setUrlAu] = useState('');
@@ -17,21 +17,21 @@ export default function ConfigAplicacion() {
     perfil.urlAu=urlAu
     console.log(perfil);
     await appService.setPerfil(perfil)
-
+    navigation.navigate("LlamadoEmergencia")
   }
 
 
 
   return (
     <View style={styles.container}>
-      <Text style={styles.textoPrincipal}>Ingrese el numero</Text>
+      <Text style={styles.textoPrincipal}>Ingrese el numero de mergencia</Text>
       <TextInput
         onChangeText={setNumero}
         value={numero}
         style={styles.input}
         keyboardType="numeric"
       />
-      <Text>{numero}</Text>
+
       <Text style={styles.textoPrincipal}>Ingrese el url del video</Text>
       <TextInput
         onChangeText={setUrlVid}
