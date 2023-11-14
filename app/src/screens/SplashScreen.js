@@ -12,13 +12,14 @@ import {
 
   
   const SplashScreen = ({ navigation }) => {
-
+    const onLoad=async()=>{ 
+      await new Promise(resolve=>setTimeout(resolve,5000)); 
+      navigation.navigate("ConfigAplicacion")
+    }; 
     useEffect(()=> { 
-        const onLoad=async()=>{ 
-          await new Promise(resolve=>setTimeout(resolve,5000)); 
-        }; 
+        
         onLoad();
-        //Invoco el método asincrónico onLoad luego de definir su cuerpo. 
+
         return()=>{ 
           // 
         }; 
@@ -48,6 +49,5 @@ import {
       padding: 10,
     },
   
-    input: { height: 40, borderrWidth: 2, padding: 1 },
   });
   

@@ -12,9 +12,10 @@ import {
 } from "react-native";
 import { Accelerometer } from "expo-sensors";
 import React, { useState, useEffect } from "react";
+import AppServices from "../services/appService";
 
 export default function LlamadoEmergencia() {
-  const [texto, setTexto] = useState("");
+  const [numero, setNumero] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [{ x, y, z }, setData] = useState({
     x: 0,
@@ -22,7 +23,12 @@ export default function LlamadoEmergencia() {
     z: 0,
   });
   const [subscription, setSubscription] = useState(null);
-
+  
+  const appService = new AppServices()
+  const loadPerfil = async () => {
+    let perfil = await appService.getPerfil();
+    setNumero(perfil.numero);
+  };
   const _slow = () => Accelerometer.setUpdateInterval(1000);
   const _fast = () => Accelerometer.setUpdateInterval(16);
 
@@ -52,17 +58,18 @@ export default function LlamadoEmergencia() {
   };
 
   useEffect(() => {
+    loadPerfil()
     _subscribe();
 
     return () => _unsubscribe();
   }, []);
   //llamar
   const llamarNumero = () => {
-    if (texto === "") {
-        console.log("Vacio ",texto);
+    if (numero === "") {
+        console.log("Vacio ",numero);
       setShowModal(true);
     } else {
-      const phoneNumber = texto;
+      const phoneNumber = numero;
       console.log(phoneNumber);
        Linking.openURL(`tel:${phoneNumber}`);
      
@@ -95,21 +102,10 @@ export default function LlamadoEmergencia() {
       </Modal>
       <Text style={styles.textoPrincipal}>Ingrese el numero</Text>
     
-      <TextInput
-        onChangeText={setTexto}
-        value={texto}
-        style={styles.input}
-        keyboardType="numeric"
-      />
-<Text>{texto}</Text>
-      <Text style={styles.textoSecundario}>LLAMADAS TELEFONICAS:</Text>
-
-      <TouchableOpacity
-        onPress={() => llamarNumero({ texto })}
-        style={styles.boton}
-      >
-        <Text style={styles.textoBoton}>Llamar</Text>
-      </TouchableOpacity>
+    
+      
+<Text>{numero}</Text>
+     
     </View>
   );
 }

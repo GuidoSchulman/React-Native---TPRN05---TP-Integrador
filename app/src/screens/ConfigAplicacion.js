@@ -15,6 +15,7 @@ export default function ConfigAplicacion() {
     perfil.numero = numero
     perfil.urlVid= urlVid
     perfil.urlAu=urlAu
+    console.log(perfil);
     await appService.setPerfil(perfil)
 
   }
@@ -30,6 +31,7 @@ export default function ConfigAplicacion() {
         style={styles.input}
         keyboardType="numeric"
       />
+      <Text>{numero}</Text>
       <Text style={styles.textoPrincipal}>Ingrese el url del video</Text>
       <TextInput
         onChangeText={setUrlVid}

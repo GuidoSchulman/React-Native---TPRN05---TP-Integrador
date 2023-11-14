@@ -14,20 +14,22 @@ class AppServices {
     let returnValue = null;
     try {
       const jsonValue = await AsyncStorage.getItem(key);
-      returnValue = ((jsonValue != null) ? 
-      JSON.parse(jsonValue) : defaultValue);
+      returnValue = jsonValue != null ? JSON.parse(jsonValue) : defaultValue; // Provide a default value here
     } catch (e) {
-      // error
+      // handle error
     }
     return returnValue;
   };
   setPerfil = async (perfil) => {
     console.log(perfil);
-    setObject(PERFIL_KEY, perfil);
+    await this.setObject(PERFIL_KEY, perfil);
   };
+  
   getPerfil =  () => {
-    let perfil = new Perfil();
-    perfil= getObject(PERFIL_KEY);
+    let perfil = new Perfil();  
+    perfil = this.getObject(PERFIL_KEY);
+    console.log(perfil);
+    return perfil
   };
 }
 export default AppServices;
