@@ -5,11 +5,13 @@ import { StyleSheet, Text, View } from 'react-native';
 import SplashScreen from "./src/screens/SplashScreen"
 import ConfigAplicacion from './src/screens/ConfigAplicacion';
 import LlamadoEmergencia from './src/screens/LlamadoEmergencia';
+import CambioImgFondo from './src/screens/CambioImgFondo';
+import VideoYMusicaFav from './src/screens/VideoYMusicaFav';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-     <Stack.Navigator initialRouteName="SplashScreen">
+     <Stack.Navigator initialRouteName="VideoYMusicaFav">
         <Stack.Screen
           name="SplashScreen"
           component={SplashScreen}
@@ -24,6 +26,16 @@ export default function App() {
           name="LlamadoEmergencia"
           component={LlamadoEmergencia}
           options={{ title: "Seccion emergencia" }}
+        />
+         <Stack.Screen
+          name="CambioImgFondo"
+          component={CambioImgFondo}
+          options={{ title: "Cambiar Fondo" }}
+        />
+         <Stack.Screen
+          name="VideoYMusicaFav"
+          component={VideoYMusicaFav}
+          options={{ title: "Video y Musica" }}
         />
       </Stack.Navigator>
       </NavigationContainer>

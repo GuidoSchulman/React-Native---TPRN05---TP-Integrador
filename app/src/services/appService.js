@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Perfil from "../models/perfil";
 const PERFIL_KEY = "PERFIL";
+const FONDO_KEY="FONDO"
 class AppServices {
   setObject = async (key, object) => {
     try {
@@ -35,5 +36,15 @@ class AppServices {
       return new Perfil();
     }
   };
+  getFondo=async()=>{
+    let fondo = await AsyncStorage.getItem(FONDO_KEY);
+    const returnValue = fondo; 
+    return returnValue; 
+  }
+  setFondo=async(fondo)=>{
+      
+      await AsyncStorage.setItem(FONDO_KEY, fondo); 
+
+  }
 }
 export default AppServices;
