@@ -13,6 +13,8 @@ import {
 import { Accelerometer } from "expo-sensors";
 import React, { useState, useEffect } from "react";
 import AppServices from "../services/appService";
+import Menu from "../components/Menu";
+import { useNavigation } from "@react-navigation/native";
 
 export default function LlamadoEmergencia() {
   const [numero, setNumero] = useState("");
@@ -23,7 +25,7 @@ export default function LlamadoEmergencia() {
     z: 0,
   });
   const [subscription, setSubscription] = useState(null);
-
+  const navigation = useNavigation();
   const appService = new AppServices();
 
   const loadPerfil = async () => {
@@ -89,6 +91,7 @@ export default function LlamadoEmergencia() {
   };
 
   return (
+    <>
     <View style={styles.centeredView}>
       <Modal
         animationType="slide"
@@ -117,11 +120,13 @@ export default function LlamadoEmergencia() {
       </Text>
 
       <Text>{numero}</Text>
-      <View style={styles.menuContainer}>
-        <Menu navigation={navigation} />
-      </View>
+      
     </View>
-  );
+    <View style={styles.menuContainer}>
+    <Menu navigation={navigation} />
+  </View>
+  </>
+    );
 }
 const styles = StyleSheet.create({
   container: {
@@ -207,5 +212,9 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  menuContainer: {
+    justifyContent: "flex-end",
+    paddingBottom: "auto", // Add some padding to control spacing from the bottom
   },
 });

@@ -37,18 +37,19 @@ const styles = StyleSheet.create({
   menu: {
     flexDirection: "row",
     width: "100%",
-   
-    bottom:0,
-    flex: 0.1
+    position: "absolute",
+    bottom: 0,
+    flex: 0.1,
+
   },
   button: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    height: 100,  // Remove quotes around numeric value
-    borderRadius: 10, // Remove quotes around numeric value
+    height: 100,
+    borderRadius: 10,
     borderColor: "black",
-    borderWidth: 4,  // Remove quotes around numeric value
+    borderWidth: 4,
   },
   textButton: {
     color: "white",

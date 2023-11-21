@@ -1,23 +1,20 @@
-import { View, Text, StyleSheet, SafeAreaView, Button, Image, ImageBackground, TouchableOpacity } from 'react-native'
-import { useState, useEffect } from 'react';
-import React from 'react'
-
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, Button, ImageBackground, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { Camera } from 'expo-camera';
+import Menu from '../components/Menu';
+import { useNavigation } from '@react-navigation/native';
+
 import AppServices from '../services/appService';
 
-import { Camera, CameraType } from 'expo-camera';
+const appService = new AppServices();
 
-let appService = new AppServices()
-
-export default function CambioImgFondo({ navigation }) {
-
+export default function CambioImgFondo() {
   const [image, setImage] = useState(null);
-  const [type, setType] = useState(CameraType.back);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
-  const [startCamera, setStartCamera] = useState(false)
+  const [startCamera, setStartCamera] = useState(false);
+  const navigation = useNavigation();
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -25,7 +22,7 @@ export default function CambioImgFondo({ navigation }) {
       quality: 1,
     });
 
-    if (!result.canceled) {
+    if (!result.cancelled) {
       await appService.setFondo(JSON.stringify(result.assets[0]));
       let backgroundImage = JSON.parse(await appService.getFondo());
       setImage(backgroundImage.uri);
@@ -33,80 +30,67 @@ export default function CambioImgFondo({ navigation }) {
   };
 
   const __startCamera = async () => {
-    const { status } = await Camera.requestCameraPermissionsAsync()
+    const { status } = await Camera.requestCameraPermissionsAsync();
     if (status === 'granted') {
-      // start the camera
-      setStartCamera(true)
+      setStartCamera(true);
     } else {
-      Alert.alert('Access denied')
+      Alert.alert('Access denied');
     }
-  }
+  };
 
   const __takePicture = async () => {
-    if (!camera) return
+    if (!camera) return;
     const photo = await camera.takePictureAsync();
     await appService.setFondo(JSON.stringify(photo));
     let backgroundImage = JSON.parse(await appService.getFondo());
     setImage(backgroundImage.uri);
-    setStartCamera(false)
-  }
+    setStartCamera(false);
+  };
 
   let loadBackground = async () => {
     if (JSON.parse(await appService.getFondo())) {
       let backgroundImage = JSON.parse(await appService.getFondo());
       setImage(backgroundImage.uri);
     }
-  }
+  };
 
   useEffect(() => {
     loadBackground();
   }, []);
 
   return (
-    <SafeAreaView style={[styles.container]}>
+    <SafeAreaView style={styles.container}>
       <ImageBackground source={{ uri: image }} style={styles.image}>
-        <Button onPress={pickImage} titulo='Elegi una imagen de tu galeria' style={styles.button} />
+        <Button onPress={pickImage} title='Elegi una imagen de tu galeria' style={styles.button} />
         {startCamera ? (
           <Camera
-            style={{ flex: 1, width: "100%" }}
+            style={{ flex: 1, width: '100%' }}
             ref={(r) => {
-              camera = r
+              camera = r;
             }}
           >
-            <View
-              style={styles.cameraContainer}
-            >
-              <View
+            <View style={styles.cameraContainer}>
+              <TouchableOpacity
+                onPress={__takePicture}
                 style={{
-                  alignSelf: 'center',
-                  flex: 1,
-                  alignItems: 'center'
+                  width: 70,
+                  height: 70,
+                  bottom: 125,
+                  borderRadius: 50,
+                  backgroundColor: '#fff',
                 }}
-              >
-                <TouchableOpacity
-                  onPress={__takePicture}
-                  style={{
-                    width: 70,
-                    height: 70,
-                    bottom: 125,
-                    borderRadius: 50,
-                    backgroundColor: '#fff'
-                  }}
-                />
-              </View>
+              />
             </View>
           </Camera>
         ) : (
-          <>
-            <Button onPress={__startCamera} titulo='Sacar una foto' style={styles.button} />
-          </>
+          <Button onPress={__startCamera} title='Sacar una foto' style={styles.button} />
         )}
       </ImageBackground>
       <View style={styles.menuContainer}>
         <Menu navigation={navigation} />
       </View>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -114,15 +98,13 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    height: '100%',
-    width: '100%',
   },
   button: {
     marginTop: 20,
     width: 300,
     height: 60,
     backgroundColor: 'black',
-    borderRadius: 10
+    borderRadius: 10,
   },
   image: {
     width: '100%',
@@ -134,9 +116,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     flexDirection: 'row',
-    flex: 1,
     width: '100%',
     padding: 20,
-    justifyContent: 'space-between'
-  }
+    justifyContent: 'space-between',
+  },
+  menuContainer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+  },
 });
