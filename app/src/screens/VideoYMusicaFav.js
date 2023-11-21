@@ -2,16 +2,19 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { Audio } from 'expo-av';
 import { useState, useEffect } from 'react';
+import { Video, ResizeMode } from 'expo-av';
+import 'react-native-gesture-handler';
 
 import AppServices from '../services/appService';
 const appService = new AppServices()
 export default function VideoYMusicaFav() {
-
+    const video = React.useRef(null);
     const [sound, setSound] = useState();
     const [isReproducing, setIsReproducing] = useState(false);
     useEffect(()=>{
         perfil=appService.getPerfil()
         uriSound=perfil.urlAud
+        uriVideo=perfil.urlVid
     })
 
     let selectSound = async () => {
@@ -57,6 +60,22 @@ export default function VideoYMusicaFav() {
     return (<> <TouchableOpacity style={audioContainer} onPress={() => selectSound()}>
         <Text style={{ color: 'black' }}>Play/Pause</Text>
     </TouchableOpacity>
+
+
+    <View style={styles.container}>
+<Video
+  ref={video}
+  style={styles.video}
+  source={{
+    uri: 'uriVideo',
+  }}
+  useNativeControls
+  resizeMode={ResizeMode.CONTAIN}
+  isLooping
+  onPlaybackStatusUpdate={status => setStatus(() => status)}
+/>
+</View>*/
+
     <View style={styles.menuContainer}>
         <Menu navigation={navigation} />
       </View>
