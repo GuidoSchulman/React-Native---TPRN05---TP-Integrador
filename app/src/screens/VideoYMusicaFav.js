@@ -54,10 +54,15 @@ export default function VideoYMusicaFav() {
         backgroundColor: isReproducing ? 'green' : 'white'
     }
 
-    return (
-        <TouchableOpacity style={audioContainer} onPress={() => selectSound()}>
+    return (<> <TouchableOpacity style={audioContainer} onPress={() => selectSound()}>
         <Text style={{ color: 'black' }}>Play/Pause</Text>
     </TouchableOpacity>
+    <View style={styles.menuContainer}>
+        <Menu navigation={navigation} />
+      </View>
+    </>
+       
+    
     
     );
 }

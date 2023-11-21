@@ -117,6 +117,9 @@ export default function LlamadoEmergencia() {
       </Text>
 
       <Text>{numero}</Text>
+      <View style={styles.menuContainer}>
+        <Menu navigation={navigation} />
+      </View>
     </View>
   );
 }

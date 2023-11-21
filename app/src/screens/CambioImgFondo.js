@@ -102,7 +102,9 @@ export default function CambioImgFondo({ navigation }) {
           </>
         )}
       </ImageBackground>
-      <Menu navigation={navigation} />
+      <View style={styles.menuContainer}>
+        <Menu navigation={navigation} />
+      </View>
     </SafeAreaView>
   )
 }
