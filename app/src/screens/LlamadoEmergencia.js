@@ -9,6 +9,7 @@ import {
   Alert,
   SafeAreaView,
   Pressable,
+  ImageBackground,
 } from "react-native";
 import { Accelerometer } from "expo-sensors";
 import React, { useState, useEffect } from "react";
@@ -19,6 +20,7 @@ import { useNavigation } from "@react-navigation/native";
 export default function LlamadoEmergencia() {
   const [numero, setNumero] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [image, setImage] = useState(null);
   const [{ x, y, z }, setData] = useState({
     x: 0,
     y: 0,
@@ -27,6 +29,17 @@ export default function LlamadoEmergencia() {
   const [subscription, setSubscription] = useState(null);
   const navigation = useNavigation();
   const appService = new AppServices();
+
+  let loadBackground = async () => {
+    if (JSON.parse(await appService.getFondo())) {
+      let backgroundImage = JSON.parse(await appService.getFondo());
+      setImage(backgroundImage.uri);
+    }
+  };
+
+  useEffect(() => {
+    loadBackground();
+  }, []);
 
   const loadPerfil = async () => {
     let perfil = await appService.getPerfil();
@@ -82,7 +95,7 @@ export default function LlamadoEmergencia() {
       console.log("Vacio ", numero);
       setShowModal(true);
     } else{
-      console.log("NUMERO QUE DEBERIA ESTAR VACIO: ", numero);
+     
       let phoneNumber = numero.trim(); // Trim again to ensure no leading/trailing spaces
       console.log(phoneNumber);
       await Linking.openURL(`tel:${phoneNumber}`);
@@ -92,7 +105,9 @@ export default function LlamadoEmergencia() {
 
   return (
     <>
+    <ImageBackground source={{ uri: image }} style={styles.image}>
     <View style={styles.centeredView}>
+    
       <Modal
         animationType="slide"
         transparent={true}
@@ -122,9 +137,12 @@ export default function LlamadoEmergencia() {
       <Text>{numero}</Text>
       
     </View>
+    </ImageBackground>
     <View style={styles.menuContainer}>
     <Menu navigation={navigation} />
+    
   </View>
+  
   </>
     );
 }
@@ -216,5 +234,11 @@ const styles = StyleSheet.create({
   menuContainer: {
     justifyContent: "flex-end",
     paddingBottom: "auto", // Add some padding to control spacing from the bottom
+  },
+  image: {
+    width: '100%',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

@@ -1,11 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { TouchableOpacity, Text, View } from 'react-native';
 import { Audio } from 'expo-av';
 import { Video, ResizeMode } from 'expo-av';
-import React, { useState, useEffect } from 'react';
-
+import { useNavigation } from '@react-navigation/native';
 import AppServices from '../services/appService';
 import Menu from '../components/Menu';
+
 const appService = new AppServices();
 
 export default function VideoYMusicaFav() {
@@ -13,110 +13,104 @@ export default function VideoYMusicaFav() {
     const [isReproducing, setIsReproducing] = useState(false);
     const [status, setStatus] = useState({});
     const [uriVideo, setUriVideo] = useState('');
+    const [uriAudio, setUriAudio] = useState('');
     const navigation = useNavigation();
+    const video = useRef(null);
+
     useEffect(() => {
-        const perfil = appService.getPerfil();
-        const uriSound = perfil.urlAud;
-        setUriVideo(perfil.urlVid);
+        loadPerfil();
     }, []);
 
-    let selectSound = async () => {
-        if (isReproducing && sound != undefined) {
+    const loadPerfil = async () => {
+        const perfil = await appService.getPerfil();
+        setUriVideo(perfil.urlVid);
+        setUriAudio(perfil.urlAu);
+    };
+
+    const selectSound = async () => {
+        console.log('Selecting Sound');
+        if (isReproducing && sound !== undefined) {
             setIsReproducing(false);
             console.log('Unloading Sound');
             await sound.pauseAsync();
-            sound.unloadAsync();
+            await sound.unloadAsync();
+            console.log('Sound Unloaded');
         } else {
             console.log('Loading Sound');
-            const { sound } = await Audio.Sound.createAsync({ uri: uriSound }, { volume: 0.8 });
-            setSound(sound);
+            console.log(uriAudio);
+            if (uriAudio) {
+                const { sound } = await Audio.Sound.createAsync({ uri: uriAudio }, { volume: 0.8 });
+                setSound(sound);
+                console.log('Sound Loaded');
+            }
         }
     };
 
-    let playSound = async () => {
-        setIsReproducing(true);
+    const playSound = async () => {
         console.log('Playing Sound');
+        setIsReproducing(true);
         await sound.playAsync();
+        console.log('Sound Played');
     };
 
     useEffect(() => {
-        if (sound != undefined) {
+        if (sound !== undefined) {
             playSound();
         }
     }, [sound]);
 
-    let audioContainer = {
-        width: '50%',
-        height: 300,
-        borderWidth: 1,
-        borderColor: 'black',
-        borderRadius: 20,
-        overflow: 'hidden',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 20,
-        backgroundColor: isReproducing ? 'green' : 'white',
-    };
-
     return (
-        <>
-            <TouchableOpacity style={audioContainer} onPress={() => selectSound()}>
+        <View style={styles.container}>
+            <TouchableOpacity style={styles.audioContainer} onPress={selectSound}>
                 <Text style={{ color: 'black' }}>Play/Pause</Text>
             </TouchableOpacity>
 
-            <View style={styles.container}>
-                <Video
-                    style={styles.video}
-                    source={{
-                        uri: uriVideo,
-                    }}
-                    useNativeControls
-                    resizeMode={ResizeMode.CONTAIN}
-                    isLooping
-                    onPlaybackStatusUpdate={(status) => setStatus(() => status)}
-                />
-            </View>
+            <Video
+                ref={video}
+                style={styles.video}
+                source={{
+                    uri: uriVideo,
+                }}
+                useNativeControls
+                resizeMode={ResizeMode.CONTAIN}
+                isLooping
+                onPlaybackStatusUpdate={(status) => setStatus(() => status)}
+            />
 
             <View style={styles.menuContainer}>
-        <Menu navigation={navigation} />
-      </View>
- 
-       
-        </>
+                <Menu navigation={navigation} />
+            </View>
+        </View>
     );
 }
 
-const styles = StyleSheet.create({
+const styles = {
     container: {
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    item: {
-        padding: 20,
-        marginVertical: 8,
-        marginHorizontal: 16,
-    },
-    title: {
-        fontSize: 32,
-    },
     audioContainer: {
-    },
-    image: {
-        objectFit: "contain",
-        width: "100%",
-        height: "100%",
+        width: '50%',
+        height: 300,
+        borderWidth: 1,
+        borderColor: 'black',
+        borderRadius: 20,
+        overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20,
+        backgroundColor: isReproducing ? 'green' : 'white',
     },
     video: {
         alignSelf: 'center',
         width: 320,
         height: 200,
-      },
-      menuContainer: {
-        justifyContent: "flex-end",
-        paddingBottom: "auto", // Add some padding to control spacing from the bottom
-      },
+    },
+    menuContainer: {
+        justifyContent: 'flex-end',
+        paddingBottom: 'auto',
+    },
     // Define other styles as needed
-});
+};

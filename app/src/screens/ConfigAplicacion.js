@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import AppServices from '../services/appService'; 
 
 const appService = new AppServices();
@@ -8,7 +8,7 @@ export default function ConfigAplicacion({navigation}) {
   const [numero, setNumero] = useState('');
   const [urlVid, setUrlVid] = useState('');
   const [urlAu, setUrlAu] = useState('');
-
+  const [image, setImage] = useState(null);
   const GuardarPerfil=async()=>{
     let perfil= await appService.getPerfil()
     console.log(perfil);
@@ -19,11 +19,22 @@ export default function ConfigAplicacion({navigation}) {
     await appService.setPerfil(perfil)
     navigation.navigate("LlamadoEmergencia")
   }
+  let loadBackground = async () => {
+    if (JSON.parse(await appService.getFondo())) {
+      let backgroundImage = JSON.parse(await appService.getFondo());
+      setImage(backgroundImage.uri);
+    }
+  };
 
+  useEffect(() => {
+    loadBackground();
+  }, []);
 
 
   return (
+    <ImageBackground source={{ uri: image }} style={styles.image}>
     <View style={styles.container}>
+      
       <Text style={styles.textoPrincipal}>Ingrese el numero de mergencia</Text>
       <TextInput
         onChangeText={setNumero}
@@ -49,8 +60,9 @@ export default function ConfigAplicacion({navigation}) {
       <TouchableOpacity onPress={() => GuardarPerfil()} style={styles.boton}>
         <Text style={styles.textoBoton}>Guardar</Text>
       </TouchableOpacity>
+     
     </View>
-
+    </ImageBackground>
 
 
   );
@@ -59,7 +71,6 @@ export default function ConfigAplicacion({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'green',
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',
@@ -90,5 +101,11 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     fontSize: 18,
+  },
+  image: {
+    width: '100%',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
