@@ -7,6 +7,7 @@ import ConfigAplicacion from './src/screens/ConfigAplicacion';
 import LlamadoEmergencia from './src/screens/LlamadoEmergencia';
 import CambioImgFondo from './src/screens/CambioImgFondo';
 import VideoYMusicaFav from './src/screens/VideoYMusicaFav';
+import About from './src/screens/About';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -36,7 +37,12 @@ export default function App() {
           name="VideoYMusicaFav"
           component={VideoYMusicaFav}
           options={{ title: "Video y Musica" }}
-        />
+        />  
+        <Stack.Screen
+        name="About"
+        component={About}
+        options={{ title: "About" }}
+      />
       </Stack.Navigator>
       </NavigationContainer>
   );
