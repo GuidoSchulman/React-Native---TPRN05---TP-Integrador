@@ -1,106 +1,171 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { TouchableOpacity, Text, View, ImageBackground, ActivityIndicator, Clipboard } from 'react-native';
-import { Audio } from 'expo-av';
-import { Video, ResizeMode } from 'expo-av';
-import * as Font from 'expo-font';
-import { useNavigation } from '@react-navigation/native';
-import AppServices from '../services/appService';
-import Menu from '../components/Menu';
+import { StatusBar } from "expo-status-bar";
+import {
+    StyleSheet,
+    Text,
+    View,
+    SafeAreaView,
+    TextInput,
+    ImageBackground,
+    Image,
 
+    TouchableOpacity
+} from "react-native";
+import React, { useState, useEffect } from "react";
+
+import { BarCodeScanner } from "expo-barcode-scanner";
+
+import Clipboard from "@react-native-community/clipboard";
+import AppServices from "../services/appService";
+import { useNavigation } from "@react-navigation/native";
 const appService = new AppServices();
-
 export default function About() {
-    // State variables
-    const navigation = useNavigation();
+    const [hasPermission, setHasPermission] = useState(null);
+    const [scanned, setScanned] = useState(false);
+    const [dataScanner, setDataScanner] = useState("");
     const [image, setImage] = useState(null);
-    const [fontLoaded, setFontLoaded] = useState(false); // State to track font loading
-
+    const navigation = useNavigation();
     useEffect(() => {
-        // Load background image and user profile data on component mount
+        const getBarCodeScannerPermissions = async () => {
+            const { status } = await BarCodeScanner.requestPermissionsAsync();
+            setHasPermission(status === "granted");
+        };
         loadBackground();
-        loadFonts();
+        getBarCodeScannerPermissions();
     }, []);
 
-    // Load background image from AsyncStorage
-    const loadBackground = async () => {
-        try {
-            const backgroundImage = JSON.parse(await appService.getFondo());
+    const handleBarCodeScanned = ({ type, data }) => {
+        setScanned(true);
+        setDataScanner(data);
+    };
+
+    const copiarData = () => {
+        Clipboard.setString(dataScanner);
+    }
+
+    let loadBackground = async () => {
+        if (JSON.parse(await appService.getFondo())) {
+            let backgroundImage = JSON.parse(await appService.getFondo());
             setImage(backgroundImage.uri);
-        } catch (error) {
-            console.error('Error loading background image', error);
         }
     };
 
-    // Load custom font
-    const loadFonts = async () => {
-        try {
-            await Font.loadAsync({
-                'font': require('../../assets/BarcodeFont.ttf'),
-            });
-            console.log('Font loaded successfully');
-            setFontLoaded(true);
-        } catch (error) {
-            console.error('Error loading font', error);
-        }
-    };
-    
 
-    // Function to copy text to the clipboard
-    const copyToClipboard = () => {
-        Clipboard.setString('Text to be copied'); // Replace 'Text to be copied' with the actual text you want to copy
-    };
+
+    if (hasPermission === null) {
+        return <Text>Requesting for camera permission</Text>;
+    }
+    if (hasPermission === false) {
+        return <Text>No access to camera</Text>;
+    }
 
     return (
-        <View style={styles.container}>
-            {fontLoaded ? ( // Render content only when the font is loaded
-                <ImageBackground source={{ uri: image }} style={styles.image}>
-                    <TouchableOpacity style={{ backgroundColor: 'white' }} onPress={copyToClipboard}>
-                        <Text style={{ fontSize: 20 }}>APP GUIDO Y BAUTI</Text>
-                        <Text style={{ fontFamily: 'font', fontSize: 60 }}>APP GUIDO Y BAUTI</Text>
-                    </TouchableOpacity>
-                </ImageBackground>
-            ) : (
-                <ActivityIndicator size="large" color="#000" />
-            )}
-            <View style={styles.menuContainer}>
-                <Menu navigation={navigation} />
-            </View>
-        </View>
+        <SafeAreaView style={styles.container}>
+            <ImageBackground source={{ uri: image }} style={styles.fondo}>
+                <BarCodeScanner
+                    onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+                    style={StyleSheet.absoluteFillObject}
+                />
+                {scanned ? (
+                    <>
+                        
+                    </>
+                ) : (
+                    <>
+                    </>
+                )}
+            
+            <TouchableOpacity onPress={copiarData}>
+            <Image
+                source={require("../../assets/barcode.gif")}
+            />
+                <Text>copiar al Clipboard</Text>
+            </TouchableOpacity>
+           
+             </ImageBackground>
+        </SafeAreaView>
+       
     );
 }
 
-// Styles
-const styles = {
+const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-        justifyContent: 'center',
+        backgroundColor: "#fff",
+        alignItems: "center",
+        justifyContent: "center",
     },
-    audioContainer: {
-        width: '50%',
-        height: 300,
-        borderWidth: 1,
-        borderColor: 'black',
-        borderRadius: 20,
-        overflow: 'hidden',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 20,
-        backgroundColor: 'white',
+    loginDiferente: {
+        width: "75%",
+        backgroundColor: "#D4AF37",
+        paddingVertical: 12,
+        marginTop: 15,
+        marginBottom: 15,
     },
-    video: {
-        alignSelf: 'center',
-        width: 320,
-        height: 200,
-    },
-    menuContainer: {
-        justifyContent: 'flex-end',
-        paddingBottom: 'auto',
-    },
-    image: {
+    TextInput: {
+        height: 50,
         flex: 1,
-        resizeMode: 'cover',
-        justifyContent: 'center',
+        padding: 10,
+        marginLeft: 20,
     },
-    // Define other styles as needed
-};
+    inputView: {
+        backgroundColor: "#4b9197",
+        borderRadius: 30,
+        width: "70%",
+        height: 45,
+        marginBottom: 20,
+        alignItems: "center",
+    },
+    fondo: {
+        width: "100%",
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+    boton: {
+        marginHorizontal: 55,
+        marginTop: 5,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#00716F",
+        paddingVertical: 8,
+        borderRadius: 23,
+    },
+    textoBoton: {
+        color: "white",
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22,
+    },
+    modalView: {
+        margin: 15,
+        backgroundColor: "white",
+        borderRadius: 20,
+        width: 300,
+        height: 550,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+    },
+    /*buttonOpen: {
+          backgroundColor: '#F194FF',
+        },*/
+    buttonClose: {
+        backgroundColor: "#2196F3",
+    },
+})
